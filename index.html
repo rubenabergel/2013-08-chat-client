@@ -13,6 +13,27 @@
     <div id="main">
       <h1>Chat with JSON!</h1>
     </div>
-
+     <table>
+      <tr>
+        <td>
+          <a href="javascript:toggleCreateUserForm()"> Show/Hide User Form </a><br><br>
+          <div id="createUser">
+          <form name="userForm">
+          Username : <input type="text" name="username"> <br>
+          Password : <input type="password" name="password"> <br>
+          </form>
+          <br>
+          <button id="#createNewUser" onclick="signupUser()"> Create User </button>
+          <button id="#loginUser" onclick="loginUser()"> Login </button>
+          <br>
+          <div id="userStatus"></div>
+          </div>
+        </td>
+        <td>
+           <div id="chatMessages">
+           </div>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
