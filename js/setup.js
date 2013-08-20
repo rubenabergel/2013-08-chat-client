@@ -13,6 +13,8 @@ $.ajaxPrefilter(function(settings, _, jqXHR) {
 //Tries to retrieve all the messages
 var dataResults;
 
+//friendsList
+var currentFriendsList = {};
 //To sign up a user, send a POST request to the users root.
 //When the creation is successful:
 //    *the HTTP Response is a "201 Created"
@@ -69,6 +71,7 @@ var loginUser = function(){
       console.log("Logged in with : " + data);
       //hide login form, when user has been logged in
       $('#loginDiv').css("display","none");
+      $('#friendsList').css("display", "block");
       }
     },
     error: function(data) {
@@ -118,8 +121,11 @@ var setChatroom = function(){
       dataResults = data.results;
       var template = "<li></li>";
       for(var i = (data.results.length - 1); i >= 0; i--){
-        //add click event to the span
-        var chatUsername = $('<span class=\'username\'>').text(data.results[i].username + ' : ' );
+       if(currentFriendsList[data.results[i].username] === data.results[i].username){
+          chatUsername = $('<span class=\'username userfriends\'>').text(data.results[i].username + ' : ' );
+        } else {
+          chatUsername = $('<span class=\'username\'>').text(data.results[i].username + ' : ' );
+        }
         chatUsername.click(addUserAsFriend);
 
         //$('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
@@ -136,7 +142,17 @@ var setChatroom = function(){
 
 var addUserAsFriend = function(){
   console.log("TEST " + $(this).text());
+   var friendsName = $(this).text().replace(/[^\w\s]/gi, '').replace(/\s+/g, '');
+   console.log(friendsName);
+  if ((!currentFriendsList[friendsName]) && (friendsName !== currentLoggedUser)){
+    currentFriendsList[friendsName] = friendsName;
+    $('#friendListNames').append(' * <span class="username">' + friendsName + '<span><br>');
+}
 };
+
+// make a function
+// when friendlist[friedname] ==== username within chatrrom
+// bold the message
 
 var updateCurrentChatroom = function(){
   $.ajax('https://api.parse.com/1/classes/' + currentChatroom + '?order=-createdAt', {

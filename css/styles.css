@@ -2,6 +2,9 @@ body {
     background: #eee;
     text-align: center;
 }
+.userfriends{
+    font-weight: bold;
+}
 #createUser{
     font-family: 'Lato', Calibri, Arial, sans-serif;
     font-size: 13px;

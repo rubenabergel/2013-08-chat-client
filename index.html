@@ -18,10 +18,12 @@
            </div>
          </div>
          <br>
+         <center>
          <div id="sendMessage">
             <textarea id="messageText" cols="50" rows"5" maxlength="150"></textarea>
             <button class="green" id="#sendmessage" onclick="sendChatMessage()"> Send </button>
           </div>
+        </center>
         </td>
         <td>
           <div id="loginDiv">
@@ -36,7 +38,13 @@
               <button class="blue" id="#loginUser" onclick="loginUser()"> Login </button>
             </div>
           </div>
-          <div id="userStatus"></div>
+          <div id="userStatus"></div><br>
+          <div id="friendsList" style="display: none;">Friends List:
+            <ul>
+            <div id="friendListNames">
+            </div>
+          </ul>
+          </div>
           <br>
           <div id="currentChatRoomDiv">Current Chat Room: <span id="chatroomTitle"></span>
           </div>
