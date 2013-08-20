@@ -10,6 +10,63 @@ $.ajaxPrefilter(function(settings, _, jqXHR) {
 * Display messages retrieved from the parse server:
 */
 
+// return this.$el.text(this.model.get('text'));
+
+var MessagesModel = Backbone.Model.extend();
+var MessageView = Backbone.View.extend({
+  render : function(){
+    var formattedText;
+    var renderedUsername = this.model.get('username');
+    var renderedMessage = this.model.get('text');
+     $(this.el).addClass('username');
+    if (currentFriendsList[renderedUsername]=== renderedUsername){
+      $(this.el).addClass('userfriends');
+      formattedText = this.$el.text(renderedUsername + ' : ' + renderedMessage );
+    } else {
+      formattedText = this.$el.text(renderedUsername + ' : ' + renderedMessage );
+    }
+    return formattedText;
+  }
+});
+var messagetest;
+var messageviewtest;
+
+var setChatroom = function(){
+  console.log("Current Chatroom: " + $(this).text());
+  $('#chatMessages').html('');
+  var chatNewName = $(this).text();
+  currentChatroom = chatNewName;
+  $.ajax('https://api.parse.com/1/classes/' + $(this).text() + '?order=-createdAt', {
+    contentType: 'application/json',
+    type:"GET",
+    success: function(response){
+      $('#chatroomTitle').text(currentChatroom);
+      /*  Creates an array of object messagesModel */
+      var messages = $.map(response.results, function(messagesData){
+        return new MessagesModel(messagesData);
+      });
+      messagetest = messages;
+
+      //creates DOM nodes: divs
+      var messageView = $.map(messages, function(messages){
+        return new MessageView({model:messages});
+      });
+      messageviewtest = messageView;
+      //creates in teh background ( viewable object )
+      var messageViewNodes = $.map(messageView, function(messageView){
+        return messageView.render();
+      });
+      // append on the screen
+      $('#chatMessages').html(messageViewNodes);
+
+      },
+    error: function(response) {
+      console.log('Ajax request failed');
+    }
+  });
+};
+
+
 //Tries to retrieve all the messages
 var dataResults;
 
@@ -27,8 +84,8 @@ var currentFriendsList = {};
 
 var newUser;
 
-
-var signupUser = function(){
+var signupUser = function(){};
+signupUser.prototype.addUser = function(){
   var username = document.forms["userForm"]["username"].value;
   var password = document.forms["userForm"]["password"].value;
   var message = JSON.stringify({"username":username, "password":password});
@@ -46,6 +103,7 @@ var signupUser = function(){
     }
   });
 };
+
 
 $( "#messageBody" ).delegate( "span", "click", function() {
   console.log("TEST");
@@ -107,41 +165,10 @@ var makeChatroom = function(){
     $('#allChatrooms').append('<br>').append(chatButton).append('<br>');
   } else {
     alert("Chatroom name contains invalid characters, only letters are allowed.");
-    var chatName = $('#chatroomName').val("");
+    $('#chatroomName').val("");
   }
 };
 
-var setChatroom = function(){
-  console.log("Current Chatroom: " + $(this).text());
-  $('#chatMessages').html('');
-  var chatNewName = $(this).text();
-  currentChatroom = chatNewName;
-  $.ajax('https://api.parse.com/1/classes/' + $(this).text() + '?order=-createdAt', {
-    contentType: 'application/json',
-    type:"GET",
-    success: function(data){
-      $('#chatroomTitle').text(currentChatroom);
-      dataResults = data.results;
-      var template = "<li></li>";
-      for(var i = (data.results.length - 1); i >= 0; i--){
-       if(currentFriendsList[data.results[i].username] === data.results[i].username){
-          chatUsername = $('<span class=\'username userfriends\'>').text(data.results[i].username + ' : ' );
-        } else {
-          chatUsername = $('<span class=\'username\'>').text(data.results[i].username + ' : ' );
-        }
-        chatUsername.click(addUserAsFriend);
-
-        //$('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
-        $('#chatMessages').append(chatUsername);
-        $('#chatMessages').append(data.results[i].text);
-        $('#chatMessages').append("<br>");
-      }
-    },
-    error: function(data) {
-      console.log('Ajax request failed');
-    }
-  });
-};
 
 var addUserAsFriend = function(){
   console.log("TEST " + $(this).text());
