@@ -129,7 +129,7 @@ var setChatroom = function(){
     success: function(data){
       dataResults = data.results;
       var template = "<li></li>";
-      for(var i = 0; i < data.results.length; i++){
+      for(var i = (data.results.length - 1); i >= 0; i--){
         $('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
         $('#chatMessages').append(escape(data.results[i].text));
         $('#chatMessages').append("<br>");
@@ -138,9 +138,24 @@ var setChatroom = function(){
     error: function(data) {
       console.log('Ajax request failed');
     }
+  });
+};
 
-
-});
+var updateCurrentChatroom = function(){
+  $.ajax('https://api.parse.com/1/classes/' + currentChatroom + '?order=-createdAt', {
+    contentType: 'application/json',
+    type:"GET",
+    success: function(data){
+      dataResults = data.results;
+      var template = "<li></li>";
+      $('#chatMessages').append("<span class='username'>"+ currentLoggedUser +"</span> : ");
+      $('#chatMessages').append(escape(data.results[0].text));
+      $('#chatMessages').append("<br>");
+    },
+    error: function(data) {
+      console.log('Ajax request failed');
+    }
+  });
 };
 
 var sendChatMessage = function(){
@@ -151,7 +166,7 @@ var sendChatMessage = function(){
     type: "POST",
     data: messageObj,
     success: function(data){
-      setChatroom();
+      updateCurrentChatroom();
     },
     error: function(data){
       console.log("Failed sending a message");
