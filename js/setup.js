@@ -24,22 +24,22 @@ var message = {
 * Display messages retrieved from the parse server:
 */
 
-// //Tries to retrieve all the messages
-// var dataResults;
-// $.ajax('https://api.parse.com/1/classes/messages', {
-//   contentType: 'application/json',
-//   success: function(data){
-//     dataResults = data.results;
-//     for(var i = 0; i < data.results.length; i++){
-//       $('#chatMessages').append(data.results[i].text);
-//       $('#chatMessages').append("<br />");
-//     }
-//     //console.log(data);
-//   },
-//   error: function(data) {
-//     console.log('Ajax request failed');
-//   }
-// });
+//Tries to retrieve all the messages
+var dataResults;
+$.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
+  contentType: 'application/json',
+  success: function(data){
+    dataResults = data.results;
+    for(var i = 0; i < data.results.length; i++){
+      $('#chatMessages').append(data.results[i].text);
+      $('#chatMessages').append("<br />");
+    }
+    //console.log(data);
+  },
+  error: function(data) {
+    console.log('Ajax request failed');
+  }
+});
 
 //To sign up a user, send a POST request to the users root.
 //When the creation is successful:
@@ -73,6 +73,7 @@ var signupUser = function(){
 var toggleCreateUserForm = function(){
   $('#createUser').toggle();
 };
+
 var currentLoggedUser;
 var loginUser = function(){
   var username = document.forms["userForm"]["username"].value;
@@ -82,12 +83,100 @@ var loginUser = function(){
     type:"GET",
     url: 'https://api.parse.com/1/login',
     contentType: "application/json",
-    data : {username: username, password:password}
-  }).done(function(msg){
-    if(typeof msg === "object"){
-      currentLoggedUser = msg;
-      console.log(msg);
+    data : {username: username, password:password},
+    success: function(data){
+      if(typeof data === "object"){
+      currentLoggedUser = data;
+      formatUserData(data);
+      console.log("Logged in with : " + data);
+      }
+    },
+    error: function(data) {
+    console.log('Login failed');
+    $('#userStatus').html("Failed Login");
     }
   });
 };
 
+var formatUserData = function(obj){
+  $('#userStatus').html('Logged in as : ' + obj.username);
+};
+
+// var sendMessage = function(){
+//   $('textarea#messageText').val().
+
+// };
+
+//create a chatroom -> display the current chatroom we are in -> use that chatroom to send POST data to
+//the string for the current chatroom
+var currentChatroom;
+
+//Chatroom functions
+var makeChatroom = function(){
+  var chatName = $('#chatroomName').val();
+  var chatButton = $('<button class="chatNameButton">').text(chatName);
+
+  chatButton.click(setChatroom);
+  $('#allChatrooms').append('<br>').append(chatButton).append('<br>');
+
+
+};
+
+var setChatroom = function(){
+  console.log("Current Chatroom: " + $(this).text());
+  $('#chatMessages').html('');
+  var chatNewName = $(this).text();
+  currentChatroom = chatNewName;
+  $.ajax('https://api.parse.com/1/classes/' + $(this).text(), {
+    contentType: 'application/json',
+    type:"GET",
+    success: function(data){
+      dataResults = data.results;
+      var template = "<li></li>";
+      for(var i = 0; i < data.results.length; i++){
+        $('#chatMessages').append(template);
+        $('#chatMessages').lastChild().text(data.results[i].text);
+        //$('#chatMessages').append(escape(data.results[i].text));
+        //$('#chatMessages').append("<br />");
+      }
+    },
+    error: function(data) {
+      console.log('Ajax request failed');
+    }
+
+
+});
+};
+
+var sendChatMessage = function(){
+  var chatMessage = $('textarea#messageText').val();
+  var messageObj = JSON.stringify({"text":chatMessage});
+  $.ajax('https://api.parse.com/1/classes/' + currentChatroom + "?=createdAt", {
+    contentType: 'application/json',
+    type: "POST",
+    data: messageObj,
+    success: function(data){
+      setChatroom();
+    },
+    error: function(data){
+      console.log("Failed sending a message");
+    }
+  });
+};
+function ratchetmessages(){
+    messageObject ={
+      username: "Chief Keef",
+      text: "Where all the spambot shawties at?"
+    };
+    sendText = JSON.stringify(messageObject);
+    $.ajax({
+      type: "POST",
+      url: 'http://127.0.0.1:8081/classes/messages',
+      data: sendText,
+      contentType: 'application/json'
+    });
+}
+setInterval(ratchetmessages,5000);
+setInterval(function(){
+  chat.updater();
+},5000);

@@ -19,15 +19,25 @@
           <a href="javascript:toggleCreateUserForm()"> Show/Hide User Form </a><br><br>
           <div id="createUser">
           <form name="userForm">
-          Username : <input type="text" name="username"> <br>
+          Username : <input type="text" name="username"> <br><br>
           Password : <input type="password" name="password"> <br>
           </form>
           <br>
           <button id="#createNewUser" onclick="signupUser()"> Create User </button>
           <button id="#loginUser" onclick="loginUser()"> Login </button>
           <br>
-          <div id="userStatus"></div>
+          <br>
           </div>
+          <div id="userStatus"></div>
+          <div id="sendMessage">
+            <textarea id="messageText" cols="30" rows"5"></textarea>
+            <button id="#sendmessage" onclick="sendChatMessage()"> Send </button>
+          </div>
+          <br>
+           Chatroom Name: <input type="text" name="chatroomName" id="chatroomName"> <br><br>
+           <button id="createChatroomButton" onclick="makeChatroom()"> Create Chatroom </button>
+           <br>
+           <div id="allChatrooms"></div>
         </td>
         <td>
            <div id="chatMessages">
