@@ -9,39 +9,42 @@
     <script src="js/setup.js"></script>
   </head>
   <body>
-
-    <div id="main">
-      <h1>Chat with JSON!</h1>
-    </div>
      <table>
+      <tr id="topHeaderBar"><td><h1>Chat with JSON!</h1></td><td></td></tr>
       <tr>
         <td>
-          <a href="javascript:toggleCreateUserForm()"> Show/Hide User Form </a><br><br>
-          <div id="createUser">
-          <form name="userForm">
-          Username : <input type="text" name="username"> <br><br>
-          Password : <input type="password" name="password"> <br>
-          </form>
-          <br>
-          <button id="#createNewUser" onclick="signupUser()"> Create User </button>
-          <button id="#loginUser" onclick="loginUser()"> Login </button>
-          <br>
-          <br>
+          <div id="messageBody">
+            <div id="chatMessages">
+           </div>
+         </div>
+         <br>
+         <div id="sendMessage">
+            <textarea id="messageText" cols="50" rows"5" maxlength="150"></textarea>
+            <button class="green" id="#sendmessage" onclick="sendChatMessage()"> Send </button>
+          </div>
+        </td>
+        <td>
+          <div id="loginDiv">
+            <button class="red" onclick="toggleCreateUserForm()"> Login </button><br>
+             <div id="createUser" style="display: none;">
+              <form name="userForm">
+              Username : <input type="text" name="username"> <br><br>
+              Password : <input type="password" name="password"> <br>
+              </form>
+              <br>
+              <button class="blue" id="#createNewUser" onclick="signupUser()"> Create User </button>
+              <button class="blue" id="#loginUser" onclick="loginUser()"> Login </button>
+            </div>
           </div>
           <div id="userStatus"></div>
-          <div id="sendMessage">
-            <textarea id="messageText" cols="30" rows"5"></textarea>
-            <button id="#sendmessage" onclick="sendChatMessage()"> Send </button>
+          <br>
+          <div id="currentChatRoomDiv">Current Chat Room: <span id="chatroomTitle"></span>
           </div>
           <br>
            Chatroom Name: <input type="text" name="chatroomName" id="chatroomName"> <br><br>
-           <button id="createChatroomButton" onclick="makeChatroom()"> Create Chatroom </button>
+           <button class="red" id="createChatroomButton" onclick="makeChatroom()"> Create / Join Chatroom </button>
            <br>
            <div id="allChatrooms"></div>
-        </td>
-        <td>
-           <div id="chatMessages">
-           </div>
         </td>
       </tr>
     </table>

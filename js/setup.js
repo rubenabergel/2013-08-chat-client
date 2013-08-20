@@ -1,13 +1,4 @@
 
-/*if(!/(&|\?)username=/.test(window.location.search)){
-  var newSearch = window.location.search;
-  if(newSearch !== '' & newSearch !== '?'){
-    newSearch += '&';
-  }
-  newSearch += 'username=' + (prompt('What is your name?') || 'anonymous');
-  window.location.search = newSearch;
-}*/
-
 // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
 $.ajaxPrefilter(function(settings, _, jqXHR) {
   jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
@@ -21,20 +12,6 @@ $.ajaxPrefilter(function(settings, _, jqXHR) {
 
 //Tries to retrieve all the messages
 var dataResults;
-// $.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
-//   contentType: 'application/json',
-//   success: function(data){
-//     dataResults = data.results;
-//     for(var i = 0; i < data.results.length; i++){
-//       $('#chatMessages').append(escape(data.results[i].text));
-//       $('#chatMessages').append("<br />");
-//     }
-//     //console.log(data);
-//   },
-//   error: function(data) {
-//     console.log('Ajax request failed');
-//   }
-// });
 
 //To sign up a user, send a POST request to the users root.
 //When the creation is successful:
@@ -85,6 +62,8 @@ var loginUser = function(){
       console.log(data.username);
       formatUserData(data);
       console.log("Logged in with : " + data);
+      //hide login form, when user has been logged in
+      $('#loginDiv').css("display","none");
       }
     },
     error: function(data) {
@@ -95,7 +74,7 @@ var loginUser = function(){
 };
 
 var formatUserData = function(obj){
-  $('#userStatus').html('Logged in as : ' + obj.username);
+  $('#userStatus').html('Logged in as : <span class="username"> ' + obj.username + "</span>");
 };
 
 // var sendMessage = function(){
@@ -110,12 +89,15 @@ var currentChatroom;
 //Chatroom functions
 var makeChatroom = function(){
   var chatName = $('#chatroomName').val();
-  var chatButton = $('<button class="chatNameButton">').text(chatName);
-
-  chatButton.click(setChatroom);
-  $('#allChatrooms').append('<br>').append(chatButton).append('<br>');
-
-
+  if((/^[a-zA-Z]+$/).test(chatName)){
+    //if valid string for chatroom name (no numbers allowed in name for chatroom)
+    var chatButton = $('<button class="chatNameButton blue">').text(chatName);
+    chatButton.click(setChatroom);
+    $('#allChatrooms').append('<br>').append(chatButton).append('<br>');
+  } else {
+    alert("Chatroom name contains invalid characters, only letters are allowed.");
+    var chatName = $('#chatroomName').val("");
+  }
 };
 
 var setChatroom = function(){
@@ -127,11 +109,12 @@ var setChatroom = function(){
     contentType: 'application/json',
     type:"GET",
     success: function(data){
+      $('#chatroomTitle').text(currentChatroom);
       dataResults = data.results;
       var template = "<li></li>";
       for(var i = (data.results.length - 1); i >= 0; i--){
         $('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
-        $('#chatMessages').append(escape(data.results[i].text));
+        $('#chatMessages').append(data.results[i].text);
         $('#chatMessages').append("<br>");
       }
     },
@@ -149,7 +132,7 @@ var updateCurrentChatroom = function(){
       dataResults = data.results;
       var template = "<li></li>";
       $('#chatMessages').append("<span class='username'>"+ currentLoggedUser +"</span> : ");
-      $('#chatMessages').append(escape(data.results[0].text));
+      $('#chatMessages').append(data.results[0].text);
       $('#chatMessages').append("<br>");
     },
     error: function(data) {
@@ -159,20 +142,25 @@ var updateCurrentChatroom = function(){
 };
 
 var sendChatMessage = function(){
-  var chatMessage = $('textarea#messageText').val();
-  var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
-  $.ajax('https://api.parse.com/1/classes/' + currentChatroom, {
-    contentType: 'application/json',
-    type: "POST",
-    data: messageObj,
-    success: function(data){
-      updateCurrentChatroom();
-    },
-    error: function(data){
-      console.log("Failed sending a message");
-    }
-  });
+  if(currentLoggedUser === undefined){
+    alert("You must be logged in");
+  } else {
+    var chatMessage = $('textarea#messageText').val();
+    var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
+    $.ajax('https://api.parse.com/1/classes/' + currentChatroom, {
+      contentType: 'application/json',
+      type: "POST",
+      data: messageObj,
+      success: function(data){
+        updateCurrentChatroom();
+      },
+      error: function(data){
+        console.log("Failed sending a message");
+      }
+    });
+}
 };
+
 // function ratchetmessages(){
 //     messageObject ={
 //       username: "Chief Keef",
