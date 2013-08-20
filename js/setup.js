@@ -42,6 +42,11 @@ var signupUser = function(){
   });
 };
 
+$( "#messageBody" ).delegate( "span", "click", function() {
+  console.log("TEST");
+});
+
+
 var toggleCreateUserForm = function(){
   $('#createUser').toggle();
 };
@@ -113,7 +118,12 @@ var setChatroom = function(){
       dataResults = data.results;
       var template = "<li></li>";
       for(var i = (data.results.length - 1); i >= 0; i--){
-        $('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
+        //add click event to the span
+        var chatUsername = $('<span class=\'username\'>').text(data.results[i].username + ' : ' );
+        chatUsername.click(addUserAsFriend);
+
+        //$('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
+        $('#chatMessages').append(chatUsername);
         $('#chatMessages').append(data.results[i].text);
         $('#chatMessages').append("<br>");
       }
@@ -124,6 +134,10 @@ var setChatroom = function(){
   });
 };
 
+var addUserAsFriend = function(){
+  console.log("TEST " + $(this).text());
+};
+
 var updateCurrentChatroom = function(){
   $.ajax('https://api.parse.com/1/classes/' + currentChatroom + '?order=-createdAt', {
     contentType: 'application/json',
@@ -131,7 +145,11 @@ var updateCurrentChatroom = function(){
     success: function(data){
       dataResults = data.results;
       var template = "<li></li>";
-      $('#chatMessages').append("<span class='username'>"+ currentLoggedUser +"</span> : ");
+      var chatUsername = $('<span class=\'username\'>').text(currentLoggedUser+ ' : ' );
+      chatUsername.click(addUserAsFriend);
+
+      // $('#chatMessages').append("<span class='username'>"+ currentLoggedUser +"</span> : ");
+      $('#chatMessages').append(chatUsername);
       $('#chatMessages').append(data.results[0].text);
       $('#chatMessages').append("<br>");
     },
