@@ -14,11 +14,6 @@ $.ajaxPrefilter(function(settings, _, jqXHR) {
   jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
 });
 
-var message = {
-  'username': 'shawndrost',
-  'text': 'trololo',
-  'roomname': '4chan' // Optional
-};
 
 /*
 * Display messages retrieved from the parse server:
@@ -31,7 +26,7 @@ $.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
   success: function(data){
     dataResults = data.results;
     for(var i = 0; i < data.results.length; i++){
-      $('#chatMessages').append(data.results[i].text);
+      $('#chatMessages').append(escape(data.results[i].text));
       $('#chatMessages').append("<br />");
     }
     //console.log(data);
@@ -86,7 +81,8 @@ var loginUser = function(){
     data : {username: username, password:password},
     success: function(data){
       if(typeof data === "object"){
-      currentLoggedUser = data;
+      currentLoggedUser = data.username;
+      console.log(data.username);
       formatUserData(data);
       console.log("Logged in with : " + data);
       }
@@ -127,17 +123,16 @@ var setChatroom = function(){
   $('#chatMessages').html('');
   var chatNewName = $(this).text();
   currentChatroom = chatNewName;
-  $.ajax('https://api.parse.com/1/classes/' + $(this).text(), {
+  $.ajax('https://api.parse.com/1/classes/' + $(this).text() + '?order=-createdAt', {
     contentType: 'application/json',
     type:"GET",
     success: function(data){
       dataResults = data.results;
       var template = "<li></li>";
       for(var i = 0; i < data.results.length; i++){
-        $('#chatMessages').append(template);
-        $('#chatMessages').lastChild().text(data.results[i].text);
-        //$('#chatMessages').append(escape(data.results[i].text));
-        //$('#chatMessages').append("<br />");
+        $('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
+        $('#chatMessages').append(escape(data.results[i].text));
+        $('#chatMessages').append("<br>");
       }
     },
     error: function(data) {
@@ -150,8 +145,8 @@ var setChatroom = function(){
 
 var sendChatMessage = function(){
   var chatMessage = $('textarea#messageText').val();
-  var messageObj = JSON.stringify({"text":chatMessage});
-  $.ajax('https://api.parse.com/1/classes/' + currentChatroom + "?=createdAt", {
+  var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
+  $.ajax('https://api.parse.com/1/classes/' + currentChatroom, {
     contentType: 'application/json',
     type: "POST",
     data: messageObj,
@@ -163,20 +158,20 @@ var sendChatMessage = function(){
     }
   });
 };
-function ratchetmessages(){
-    messageObject ={
-      username: "Chief Keef",
-      text: "Where all the spambot shawties at?"
-    };
-    sendText = JSON.stringify(messageObject);
-    $.ajax({
-      type: "POST",
-      url: 'http://127.0.0.1:8081/classes/messages',
-      data: sendText,
-      contentType: 'application/json'
-    });
-}
-setInterval(ratchetmessages,5000);
-setInterval(function(){
-  chat.updater();
-},5000);
+// function ratchetmessages(){
+//     messageObject ={
+//       username: "Chief Keef",
+//       text: "Where all the spambot shawties at?"
+//     };
+//     sendText = JSON.stringify(messageObject);
+//     $.ajax({
+//       type: "POST",
+//       url: 'http://127.0.0.1:8081/classes/messages',
+//       data: sendText,
+//       contentType: 'application/json'
+//     });
+// }
+// setInterval(ratchetmessages,5000);
+// setInterval(function(){
+//   chat.updater();
+// },5000);
