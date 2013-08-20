@@ -21,20 +21,20 @@ $.ajaxPrefilter(function(settings, _, jqXHR) {
 
 //Tries to retrieve all the messages
 var dataResults;
-$.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
-  contentType: 'application/json',
-  success: function(data){
-    dataResults = data.results;
-    for(var i = 0; i < data.results.length; i++){
-      $('#chatMessages').append(escape(data.results[i].text));
-      $('#chatMessages').append("<br />");
-    }
-    //console.log(data);
-  },
-  error: function(data) {
-    console.log('Ajax request failed');
-  }
-});
+// $.ajax('https://api.parse.com/1/classes/messages?order=-createdAt', {
+//   contentType: 'application/json',
+//   success: function(data){
+//     dataResults = data.results;
+//     for(var i = 0; i < data.results.length; i++){
+//       $('#chatMessages').append(escape(data.results[i].text));
+//       $('#chatMessages').append("<br />");
+//     }
+//     //console.log(data);
+//   },
+//   error: function(data) {
+//     console.log('Ajax request failed');
+//   }
+// });
 
 //To sign up a user, send a POST request to the users root.
 //When the creation is successful:
