@@ -1,9 +1,6 @@
 
 // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
-$.ajaxPrefilter(function(settings, _, jqXHR) {
-  jqXHR.setRequestHeader("X-Parse-Application-Id", "voLazbq9nXuZuos9hsmprUz7JwM2N0asnPnUcI7r");
-  jqXHR.setRequestHeader("X-Parse-REST-API-Key", "QC2F43aSAghM97XidJw8Qiy1NXlpL5LR45rhAVAf");
-});
+
 
 
 /*
@@ -21,7 +18,7 @@ var currentFriendsList = {};
 //    *Location contains the URL for the new user,
 //    Example:
 //      Status: 201 Created
-//      Location: https://api.parse.com/1/users/g7y9tkhB7a
+//      Location: http://127.0.0.1:8000/1/users/g7y9tkhB7a
 
 //For taken usernames, it will give a bad request
 
@@ -36,10 +33,12 @@ var signupUser = function(){
   $.ajax({
   contentType: "application/json",
   type:"POST",
-  url: 'https://api.parse.com/1/users',
+  url: 'http://127.0.0.1:8000/1/users',
   data: message
-  }).done(function(msg){
-    console.log(msg);
+  }).done(function(msg, args2, arg3){
+    console.log('arg2', args2);
+    console.log('args3', arg3);
+    console.log('msg',msg);
     if(typeof msg === "object"){
       $('#userStatus').html(msg.createdAt);
       newUser = msg;
@@ -63,7 +62,7 @@ var loginUser = function(){
   //with GET, do not stringify
   $.ajax({
     type:"GET",
-    url: 'https://api.parse.com/1/login',
+    url: 'http://127.0.0.1:8000/1/login',
     contentType: "application/json",
     data : {username: username, password:password},
     success: function(data){
@@ -116,7 +115,7 @@ var setChatroom = function(){
   $('#chatMessages').html('');
   var chatNewName = $(this).text();
   currentChatroom = chatNewName;
-  $.ajax('https://api.parse.com/1/classes/' + $(this).text() + '?order=-createdAt', {
+  $.ajax('http://127.0.0.1:8000/1/classes/' + $(this).text() + '?order=-createdAt', {
     contentType: 'application/json',
     type:"GET",
     success: function(data){
@@ -158,7 +157,7 @@ var addUserAsFriend = function(){
 // bold the message
 
 var updateCurrentChatroom = function(){
-  $.ajax('https://api.parse.com/1/classes/' + currentChatroom + '?order=-createdAt', {
+  $.ajax('http://127.0.0.1:8000/1/classes/' + currentChatroom + '?order=-createdAt', {
     contentType: 'application/json',
     type:"GET",
     success: function(data){
@@ -184,7 +183,7 @@ var sendChatMessage = function(){
   } else {
     var chatMessage = $('textarea#messageText').val();
     var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
-    $.ajax('https://api.parse.com/1/classes/' + currentChatroom, {
+    $.ajax('http://127.0.0.1:8000/1/classes/' + currentChatroom, {
       contentType: 'application/json',
       type: "POST",
       data: messageObj,
