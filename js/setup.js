@@ -39,9 +39,13 @@ var signupUser = function(){
     console.log('arg2', args2);
     console.log('args3', arg3);
     console.log('msg',msg);
-    if(typeof msg === "object"){
-      $('#userStatus').html(msg.createdAt);
-      newUser = msg;
+    if(typeof msg === "string"){
+      console.log('string', msg);
+      var msgi = JSON.parse(msg);
+      console.log('parse', msgi);
+      $('#userStatus').html(msgi.createdAt);
+      newUser = msgi;
+      console.log('signup success');
     }
   });
 };
@@ -61,19 +65,21 @@ var loginUser = function(){
   var password = document.forms["userForm"]["password"].value;
   //with GET, do not stringify
   $.ajax({
-    type:"GET",
+    type:"POST",
     url: 'http://127.0.0.1:8000/1/login',
     contentType: "application/json",
-    data : {username: username, password:password},
+    data : JSON.stringify({"username": username, "password":password}),
     success: function(data){
-      if(typeof data === "object"){
-      currentLoggedUser = data.username;
-      console.log(data.username);
-      formatUserData(data);
-      console.log("Logged in with : " + data);
+      if(typeof data === "string"){
+      var datai = JSON.parse(data);
+      currentLoggedUser = datai.username;
+      console.log(datai.username);
+      formatUserData(datai);
+      console.log("Logged in with : " + datai);
       //hide login form, when user has been logged in
       $('#loginDiv').css("display","none");
       $('#friendsList').css("display", "block");
+      console.log('LOGIN successful');
       }
     },
     error: function(data) {
