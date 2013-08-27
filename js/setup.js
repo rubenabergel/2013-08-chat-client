@@ -123,9 +123,12 @@ var setChatroom = function(){
   currentChatroom = chatNewName;
   $.ajax('http://127.0.0.1:8000/1/classes/' + $(this).text() + '?order=-createdAt', {
     contentType: 'application/json',
-    type:"GET",
+    type:"POST",
     success: function(data){
+      data = JSON.stringify(data);
       $('#chatroomTitle').text(currentChatroom);
+      console.log('VIcTORY');
+      console.log(data);
       dataResults = data.results;
       var template = "<li></li>";
       for(var i = (data.results.length - 1); i >= 0; i--){
