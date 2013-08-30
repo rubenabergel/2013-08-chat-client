@@ -122,8 +122,7 @@ var setChatroom = function(){
   var chatNewName = $(this).text();
   currentChatroom = chatNewName;
   var t = $(this).text();
-  console.log('http://127.0.0.1:8080/'+ t);
-  $.ajax('http://127.0.0.1:8080/'+ $(this).text(), {
+  $.ajax('http://127.0.0.1:8080/1/classes/'+ $(this).text(), {
     contentType:'application/json',
     type:"POST",
     success: function(response){
@@ -131,15 +130,14 @@ var setChatroom = function(){
       if(response === "-1"){
         console.log("New Chatroom with no messages yet");
       } else {
-      var messageArray = JSON.parse(response);
-      if(typeof messageArray === 'object' ){
-        for(var i = 0; i < messageArray.length; i++){
-          $('#chatMessages').append(messageArray[i].username + " : " + messageArray[i].text +"<br>");
+        var messages = JSON.parse(response);
+        console.log('messages', messages);
+        for(var i = 0; i < messages.length; i++){
+          $('#chatMessages').append(messages[i].username + " : " + messages[i].text +"<br>");
         }
-          console.log("Retrieving new chatroom messages");
-          }
-        }
-      },
+        console.log("Retrieving new chatroom messages");
+      }
+    },
     error: function(response) {
       console.log('Ajax request failed');
     }
@@ -186,8 +184,12 @@ var sendChatMessage = function(){
     alert("You must be logged in");
   } else {
     var chatMessage = $('textarea#messageText').val();
-    var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
-    $.ajax('http://127.0.0.1:8080/chatroom/', {
+    var messageObj = JSON.stringify({
+      text:chatMessage,
+      username:currentLoggedUser,
+      roomName: currentChatroom
+    });
+    $.ajax('http://127.0.0.1:8080/1/classes/messages', {
       contentType: 'application/json',
       type: "POST",
       data: messageObj,
