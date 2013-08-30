@@ -33,7 +33,7 @@ var signupUser = function(){
   $.ajax({
   contentType: "application/json",
   type:"POST",
-  url: 'http://127.0.0.1:8000/1/users',
+  url: 'http://127.0.0.1:8080/1/users',
   data: message
   }).done(function(msg, args2, arg3){
     console.log('arg2', args2);
@@ -66,7 +66,7 @@ var loginUser = function(){
   //with GET, do not stringify
   $.ajax({
     type:"POST",
-    url: 'http://127.0.0.1:8000/1/login',
+    url: 'http://127.0.0.1:8080/1/login',
     contentType: "application/json",
     data : JSON.stringify({"username": username, "password":password}),
     success: function(data){
@@ -121,31 +121,26 @@ var setChatroom = function(){
   $('#chatMessages').html('');
   var chatNewName = $(this).text();
   currentChatroom = chatNewName;
-  $.ajax('http://127.0.0.1:8000/1/classes/' + $(this).text() + '?order=-createdAt', {
-    contentType: 'application/json',
+  var t = $(this).text();
+  console.log('http://127.0.0.1:8080/'+ t);
+  $.ajax('http://127.0.0.1:8080/'+ $(this).text(), {
+    contentType:'application/json',
     type:"POST",
-    success: function(data){
-      data = JSON.stringify(data);
+    success: function(response){
       $('#chatroomTitle').text(currentChatroom);
-      console.log('VIcTORY');
-      console.log(data);
-      dataResults = data.results;
-      var template = "<li></li>";
-      for(var i = (data.results.length - 1); i >= 0; i--){
-       if(currentFriendsList[data.results[i].username] === data.results[i].username){
-          chatUsername = $('<span class=\'username userfriends\'>').text(data.results[i].username + ' : ' );
-        } else {
-          chatUsername = $('<span class=\'username\'>').text(data.results[i].username + ' : ' );
+      if(response === "-1"){
+        console.log("New Chatroom with no messages yet");
+      } else {
+      var messageArray = JSON.parse(response);
+      if(typeof messageArray === 'object' ){
+        for(var i = 0; i < messageArray.length; i++){
+          $('#chatMessages').append(messageArray[i].username + " : " + messageArray[i].text +"<br>");
         }
-        chatUsername.click(addUserAsFriend);
-
-        //$('#chatMessages').append("<span class='username'>"+ data.results[i].username +"</span> : ");
-        $('#chatMessages').append(chatUsername);
-        $('#chatMessages').append(data.results[i].text);
-        $('#chatMessages').append("<br>");
-      }
-    },
-    error: function(data) {
+          console.log("Retrieving new chatroom messages");
+          }
+        }
+      },
+    error: function(response) {
       console.log('Ajax request failed');
     }
   });
@@ -166,7 +161,7 @@ var addUserAsFriend = function(){
 // bold the message
 
 var updateCurrentChatroom = function(){
-  $.ajax('http://127.0.0.1:8000/1/classes/' + currentChatroom + '?order=-createdAt', {
+  $.ajax('http://127.0.0.1:8080/1/classes/' + currentChatroom + '?order=-createdAt', {
     contentType: 'application/json',
     type:"GET",
     success: function(data){
@@ -192,12 +187,16 @@ var sendChatMessage = function(){
   } else {
     var chatMessage = $('textarea#messageText').val();
     var messageObj = JSON.stringify({"text":chatMessage, "username":currentLoggedUser});
-    $.ajax('http://127.0.0.1:8000/1/classes/' + currentChatroom, {
+    $.ajax('http://127.0.0.1:8080/chatroom/', {
       contentType: 'application/json',
       type: "POST",
       data: messageObj,
       success: function(data){
-        updateCurrentChatroom();
+        //add here to update the current chatroom
+        //setChatroom();
+        var msgObj = JSON.parse(data);
+        $('#chatMessages').append(msgObj.username + " : " + msgObj.text + "<br>");
+
       },
       error: function(data){
         console.log("Failed sending a message");
